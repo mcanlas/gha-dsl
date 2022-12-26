@@ -12,6 +12,20 @@ import com.htmlism.ghadsl.GitHubActionsWorkflow._
 import com.htmlism.ghadsl.LineEncoder._
 
 object WriteYaml extends App {
+  val minimalWorkflow =
+    GitHubActionsWorkflow(
+      NonEmptyList.of(Push()),
+      NonEmptyList.of(
+        Job(
+          "mimimal-foo",
+          GitHub.Runners.UbuntuLatest,
+          NonEmptyList.of(
+            Job.Step.Runs("echo hello")
+          )
+        )
+      )
+    )
+
   val workflow =
     GitHubActionsWorkflow(
       NonEmptyList.of(PullRequest(), Push()),
@@ -39,7 +53,7 @@ object WriteYaml extends App {
     .write(Path.of(".github", "workflows", "ci.yml"), workflow.encode.asJava)
 
   Files
-    .write(Path.of(".github", "workflows", "c2.yml"), workflow.encode.asJava)
+    .write(Path.of(".github", "workflows", "minimal.yml"), minimalWorkflow.encode.asJava)
 }
 
 /**
