@@ -13,7 +13,10 @@ import com.htmlism.ghadsl.LineEncoder._
 
 object WriteYaml extends App {
   val workflow =
-    GitHubActionsWorkflow(NonEmptyList.of(PullRequest(), Push()))
+    GitHubActionsWorkflow(
+      NonEmptyList.of(PullRequest(), Push()),
+      NonEmptyList.of(Job("foo"), Job("bar"))
+    )
 
   Files
     .write(Path.of(".github", "workflows", "ci.yml"), workflow.encode.asJava)
@@ -26,7 +29,10 @@ object WriteYaml extends App {
   * @param jobs
   *   At least one job is required
   */
-case class GitHubActionsWorkflow(triggerEvents: NonEmptyList[TriggerEvent])
+case class GitHubActionsWorkflow(
+    triggerEvents: NonEmptyList[TriggerEvent],
+    jobs: NonEmptyList[Job]
+)
 
 object GitHubActionsWorkflow {
   implicit val ghaEncoder: LineEncoder[GitHubActionsWorkflow] =
@@ -35,7 +41,11 @@ object GitHubActionsWorkflow {
         List("on:") ++ wf.triggerEvents.toList.flatMap(_.encode).pipe(indents)
 
       val jobs =
-        List("jobs:")
+        List("jobs:") ++ wf
+          .jobs
+          .toList
+          .map(_.encode.pipe(indents))
+          .pipe(interConcat(List("")))
 
       List(triggers, jobs)
         .pipe(interConcat(List("")))
@@ -55,6 +65,15 @@ object GitHubActionsWorkflow {
     case class PullRequest() extends TriggerEvent
 
     case class Push() extends TriggerEvent
+  }
+
+  case class Job(name: String)
+
+  object Job {
+    implicit val jobEncoder: LineEncoder[Job] =
+      (j: Job) => {
+        List(j.name + ":")
+      }
   }
 }
 
