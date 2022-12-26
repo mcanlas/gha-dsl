@@ -6,9 +6,11 @@ on:
 
 jobs:
   foo:
+    runs-on: ubuntu-latest
     steps:
       - run: echo hello
 
   bar:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

@@ -18,12 +18,14 @@ object WriteYaml extends App {
       NonEmptyList.of(
         Job(
           "foo",
+          GitHub.Runners.UbuntuLatest,
           NonEmptyList.of(
             Job.Step.Runs("echo hello")
           )
         ),
         Job(
           "bar",
+          GitHub.Runners.UbuntuLatest,
           NonEmptyList.of(
             Job.Step.Uses("actions/checkout@v2")
           )
@@ -80,16 +82,18 @@ object GitHubActionsWorkflow {
     case class Push() extends TriggerEvent
   }
 
-  case class Job(name: String, steps: NonEmptyList[Job.Step])
+  case class Job(name: String, runsOn: Job.Runner, steps: NonEmptyList[Job.Step])
 
   object Job {
     implicit val jobEncoder: LineEncoder[Job] =
       (j: Job) => {
-        val stepsLines =
-          List("steps:") ++ j.steps.toList.flatMap(_.encode.pipe(asArrayElement))
+        val jobLinesss =
+          List("runs-on: " + j.runsOn.s, "steps:") ++ j.steps.toList.flatMap(_.encode.pipe(asArrayElement))
 
-        List(j.name + ":") ++ stepsLines.pipe(indents)
+        List(j.name + ":") ++ jobLinesss.pipe(indents)
       }
+
+    final case class Runner(s: String) extends AnyVal
 
     sealed trait Step
 
@@ -134,4 +138,11 @@ object LineEncoder {
       case Nil =>
         Nil
     }
+}
+
+object GitHub {
+  object Runners {
+    val UbuntuLatest =
+      Job.Runner("ubuntu-latest")
+  }
 }
