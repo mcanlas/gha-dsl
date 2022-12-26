@@ -6,5 +6,9 @@ on:
 
 jobs:
   foo:
+    steps:
+      - run: echo hello
 
   bar:
+    steps:
+      - uses: actions/checkout@v2
