@@ -1,5 +1,7 @@
 # gha-dsl
 
+See also [GitHub Actions explained quickly](explained-quickly.md)
+
 ## Goals
 
 - Easily support the generation of multiple GHA workflows
