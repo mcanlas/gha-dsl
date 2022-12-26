@@ -6,6 +6,7 @@ import scala.jdk.CollectionConverters._
 import scala.util.chaining._
 
 import cats.data.NonEmptyList
+import cats.syntax.all._
 
 import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent._
 import com.htmlism.ghadsl.GitHubActionsWorkflow._
@@ -14,6 +15,7 @@ import com.htmlism.ghadsl.LineEncoder._
 object WriteYaml extends App {
   val minimalWorkflow =
     GitHubActionsWorkflow(
+      None,
       NonEmptyList.of(Push()),
       NonEmptyList.of(
         Job(
@@ -28,6 +30,7 @@ object WriteYaml extends App {
 
   val workflow =
     GitHubActionsWorkflow(
+      None,
       NonEmptyList.of(PullRequest(), Push()),
       NonEmptyList.of(
         Job(
@@ -48,6 +51,7 @@ object WriteYaml extends App {
         )
       )
     )
+      .withName("big workflow")
 
   Files
     .write(Path.of(".github", "workflows", "ci.yml"), workflow.encode.asJava)
@@ -58,19 +62,29 @@ object WriteYaml extends App {
 
 /**
   * A GHA job will not run without triggers specified
+  *
+  * @param name
+  *   Workflow name is optional; if it isn't provided, the file path will be used
   * @param triggerEvents
   *   At least one trigger is required
   * @param jobs
   *   At least one job is required
   */
 case class GitHubActionsWorkflow(
+    name: Option[String],
     triggerEvents: NonEmptyList[TriggerEvent],
     jobs: NonEmptyList[Job]
-)
+) {
+  def withName(s: String): GitHubActionsWorkflow =
+    copy(name = s.some)
+}
 
 object GitHubActionsWorkflow {
   implicit val ghaEncoder: LineEncoder[GitHubActionsWorkflow] =
     (wf: GitHubActionsWorkflow) => {
+      val nameLines =
+        wf.name.map("name: " + _).toList
+
       val triggers =
         List("on:") ++ wf.triggerEvents.toList.flatMap(_.encode).pipe(indents)
 
@@ -81,7 +95,12 @@ object GitHubActionsWorkflow {
           .map(_.encode.pipe(indents))
           .pipe(interConcat(List("")))
 
-      List(triggers, jobs)
+      (
+        if (wf.name.isEmpty)
+          List(triggers, jobs)
+        else
+          List(nameLines, triggers, jobs)
+      )
         .pipe(interConcat(List("")))
     }
 
