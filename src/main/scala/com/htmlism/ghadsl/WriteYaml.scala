@@ -21,12 +21,25 @@ object WriteYaml extends App {
 
 /**
   * A GHA job will not run without triggers specified
+  * @param triggerEvents
+  *   At least one trigger is required
+  * @param jobs
+  *   At least one job is required
   */
 case class GitHubActionsWorkflow(triggerEvents: NonEmptyList[TriggerEvent])
 
 object GitHubActionsWorkflow {
   implicit val ghaEncoder: LineEncoder[GitHubActionsWorkflow] =
-    (wf: GitHubActionsWorkflow) => List("on:") ++ wf.triggerEvents.toList.flatMap(_.encode).pipe(indents)
+    (wf: GitHubActionsWorkflow) => {
+      val triggers =
+        List("on:") ++ wf.triggerEvents.toList.flatMap(_.encode).pipe(indents)
+
+      val jobs =
+        List("jobs:")
+
+      List(triggers, jobs)
+        .pipe(interConcat(List("")))
+    }
 
   sealed trait TriggerEvent
 
@@ -52,4 +65,13 @@ trait LineEncoder[A] {
 object LineEncoder {
   def indents(xs: List[String]): List[String] =
     xs.map("  " + _)
+
+  def interConcat[A](join: List[A])(xxs: List[List[A]]): List[A] =
+    xxs match {
+      case head :: tail =>
+        head ::: tail.flatMap(a => join ::: a)
+
+      case Nil =>
+        Nil
+    }
 }
