@@ -20,6 +20,7 @@ object WriteYaml extends App {
           "foo",
           GitHub.Runners.UbuntuLatest,
           NonEmptyList.of(
+            Job.Step.Uses("actions/checkout@v2"),
             Job.Step.Runs("echo hello")
           )
         ),
@@ -27,7 +28,8 @@ object WriteYaml extends App {
           "bar",
           GitHub.Runners.UbuntuLatest,
           NonEmptyList.of(
-            Job.Step.Uses("actions/checkout@v2")
+            Job.Step.Uses("actions/checkout@v2"),
+            Job.Step.Runs("echo hello")
           )
         )
       )
@@ -35,6 +37,9 @@ object WriteYaml extends App {
 
   Files
     .write(Path.of(".github", "workflows", "ci.yml"), workflow.encode.asJava)
+
+  Files
+    .write(Path.of(".github", "workflows", "c2.yml"), workflow.encode.asJava)
 }
 
 /**
