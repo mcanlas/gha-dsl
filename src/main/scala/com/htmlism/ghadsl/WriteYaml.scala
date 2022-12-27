@@ -123,7 +123,7 @@ object GitHubActionsWorkflow {
     case class Push() extends TriggerEvent
   }
 
-  case class Job(name: String, runsOn: Job.Runner, steps: NonEmptyList[Job.Step])
+  case class Job(id: String, runsOn: Job.Runner, steps: NonEmptyList[Job.Step])
 
   object Job {
     implicit val jobEncoder: LineEncoder[Job] =
@@ -131,7 +131,7 @@ object GitHubActionsWorkflow {
         val jobLinesss =
           List("runs-on: " + j.runsOn.s, "steps:") ++ j.steps.toList.flatMap(_.encode.pipe(asArrayElement))
 
-        List(j.name + ":") ++ jobLinesss.pipe(indents)
+        List(j.id + ":") ++ jobLinesss.pipe(indents)
       }
 
     final case class Runner(s: String) extends AnyVal
