@@ -11,7 +11,6 @@ import com.htmlism.ghadsl.GitHubActionsWorkflow._
 object WriteYaml extends App {
   val minimalWorkflow =
     GitHubActionsWorkflow(
-      None,
       NonEmptyList.of(Push()),
       NonEmptyList.of(
         Job(
@@ -26,7 +25,6 @@ object WriteYaml extends App {
 
   val workflow =
     GitHubActionsWorkflow(
-      None,
       NonEmptyList.of(Push()),
       NonEmptyList.of(
         Job(

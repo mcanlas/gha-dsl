@@ -46,6 +46,9 @@ object GitHubActionsWorkflow {
         .pipe(interConcat(List("")))
     }
 
+  def apply(triggerEvents: NonEmptyList[TriggerEvent], jobs: NonEmptyList[Job]): GitHubActionsWorkflow =
+    GitHubActionsWorkflow(None, triggerEvents, jobs)
+
   sealed trait TriggerEvent
 
   object TriggerEvent {
