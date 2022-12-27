@@ -3,8 +3,6 @@ package examples
 
 import java.nio.file._
 
-import scala.jdk.CollectionConverters._
-
 import cats.data.NonEmptyList
 
 import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent._
@@ -66,8 +64,8 @@ object WriteYaml extends App {
     List("# This file was automatically generated", "")
 
   Files
-    .write(Path.of(".github", "workflows", "ci.yml"), (heading ::: workflow.encode).asJava)
+    .write(Path.of(".github", "workflows", "ci.yml"), list(heading ::: workflow.encode))
 
   Files
-    .write(Path.of(".github", "workflows", "minimal.yml"), (heading ::: minimalWorkflow.encode).asJava)
+    .write(Path.of(".github", "workflows", "minimal.yml"), list(heading ::: minimalWorkflow.encode))
 }

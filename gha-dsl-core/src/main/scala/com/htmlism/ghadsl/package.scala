@@ -6,6 +6,14 @@ package object ghadsl {
       enc.encode(x)
   }
 
+  /**
+    * Replicates chaining syntax introduced in 2.13, unavailable in 2.12
+    */
+  implicit class PipeOps[A](val x: A) extends AnyVal {
+    def pipe[B](f: A => B): B =
+      f(x)
+  }
+
   def ctx(s: String): String =
     s"$${{ $s }}"
 }

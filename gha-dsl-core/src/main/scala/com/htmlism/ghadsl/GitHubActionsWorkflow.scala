@@ -1,7 +1,5 @@
 package com.htmlism.ghadsl
 
-import scala.util.chaining._
-
 import cats.data.NonEmptyList
 import cats.syntax.all._
 
