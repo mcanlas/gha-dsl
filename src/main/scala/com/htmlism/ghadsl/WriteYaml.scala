@@ -94,7 +94,7 @@ object GitHubActionsWorkflow {
   implicit val ghaEncoder: LineEncoder[GitHubActionsWorkflow] =
     (wf: GitHubActionsWorkflow) => {
       val nameLines =
-        wf.name.map("name: " + _).toList
+        wf.name.map(n => List("name: " + n))
 
       val triggers =
         List("on:") ++ wf.triggerEvents.toList.flatMap(_.encode).pipe(intended)
@@ -106,12 +106,7 @@ object GitHubActionsWorkflow {
           .map(_.encode.pipe(intended))
           .pipe(interConcat(List("")))
 
-      (
-        if (wf.name.isEmpty)
-          List(triggers, jobs)
-        else
-          List(nameLines, triggers, jobs)
-      )
+      (nameLines.toList ::: List(triggers, jobs))
         .pipe(interConcat(List("")))
     }
 
@@ -137,7 +132,11 @@ object GitHubActionsWorkflow {
     implicit val jobEncoder: LineEncoder[Job] =
       (j: Job) => {
         val jobLinesss =
-          List("runs-on: " + j.runsOn.s, "steps:") ++ j.steps.toList.flatMap(_.encode.pipe(asArrayElement))
+          List("runs-on: " + j.runsOn.s, "steps:") ++
+            j.steps
+              .toList
+              .map(_.encode.pipe(asArrayElement))
+              .pipe(interConcat(List("")))
 
         List(j.id + ":") ++ jobLinesss.pipe(intended)
       }
@@ -187,7 +186,12 @@ trait LineEncoder[A] {
 
 object LineEncoder {
   def intended(xs: List[String]): List[String] =
-    xs.map("  " + _)
+    xs.map { s =>
+      if (s.isEmpty)
+        s
+      else
+        "  " + s
+    }
 
   def asArrayElement(xs: List[String]): List[String] =
     xs match {
