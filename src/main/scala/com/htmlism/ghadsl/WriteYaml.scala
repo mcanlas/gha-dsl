@@ -53,11 +53,14 @@ object WriteYaml extends App {
     )
       .withName("big workflow")
 
-  Files
-    .write(Path.of(".github", "workflows", "ci.yml"), workflow.encode.asJava)
+  val heading =
+    List("# This file was automatically generated", "")
 
   Files
-    .write(Path.of(".github", "workflows", "minimal.yml"), minimalWorkflow.encode.asJava)
+    .write(Path.of(".github", "workflows", "ci.yml"), (heading ::: workflow.encode).asJava)
+
+  Files
+    .write(Path.of(".github", "workflows", "minimal.yml"), (heading ::: minimalWorkflow.encode).asJava)
 }
 
 /**
