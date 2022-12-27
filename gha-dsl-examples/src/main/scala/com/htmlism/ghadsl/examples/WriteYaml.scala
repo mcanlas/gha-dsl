@@ -35,7 +35,7 @@ object WriteYaml extends App {
           "foo",
           GitHub.Runners.UbuntuLatest,
           NonEmptyList.of(
-            Job.Step.Uses("actions/checkout@v2"),
+            Job.Step.Uses("actions/checkout@v3"),
             Job.Step.Run("echo hello")
           )
         ),
@@ -43,7 +43,7 @@ object WriteYaml extends App {
           "bar",
           GitHub.Runners.UbuntuLatest,
           NonEmptyList.of(
-            Job.Step.Uses("actions/checkout@v2"),
+            Job.Step.Uses("actions/checkout@v3"),
             Job
               .Step
               .Uses("actions/setup-java@v3")
