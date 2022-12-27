@@ -5,4 +5,7 @@ package object ghadsl {
     def encode: List[String] =
       enc.encode(x)
   }
+
+  def ctx(s: String): String =
+    s"$${{ $s }}"
 }

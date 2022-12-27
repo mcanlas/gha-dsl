@@ -94,26 +94,43 @@ object GitHubActionsWorkflow {
                 .map { case (k, v) =>
                   s"$k: $v"
                 }
-                .toList
                 .pipe(intended)
 
           List("uses: " + s) ::: withLines
 
-        case Run(s) =>
-          List("run: " + s)
+        case Run(s, env) =>
+          val envLines =
+            if (env.isEmpty)
+              Nil
+            else
+              List("env:") ++ env
+                .map { case (k, v) =>
+                  s"$k: $v"
+                }
+                .pipe(intended)
+
+          List("run: " + s) ::: envLines
       }
 
-      case class Uses(s: String, args: Map[String, String]) extends Step {
+      case class Uses(s: String, args: List[(String, String)]) extends Step {
         def parameters(xs: (String, String)*): Uses =
-          copy(args = xs.toMap)
+          copy(args = xs.toList)
       }
 
       object Uses {
         def apply(s: String): Uses =
-          Uses(s, Map())
+          Uses(s, Nil)
       }
 
-      case class Run(s: String) extends Step
+      case class Run(s: String, env: List[(String, String)]) extends Step {
+        def withEnv(xs: (String, String)*): Run =
+          copy(env = xs.toList)
+      }
+
+      object Run {
+        def apply(s: String): Run =
+          Run(s, Nil)
+      }
     }
   }
 }

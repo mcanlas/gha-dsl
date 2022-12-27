@@ -29,7 +29,7 @@ object WriteYaml extends App {
   val workflow =
     GitHubActionsWorkflow(
       None,
-      NonEmptyList.of(PullRequest(), Push()),
+      NonEmptyList.of(Push()),
       NonEmptyList.of(
         Job(
           "foo",
@@ -52,7 +52,10 @@ object WriteYaml extends App {
                 "java-version" -> "17",
                 "cache" -> "sbt"
               ),
-            Job.Step.Run("sbt 'scalafixAll --check' scalafmtCheck +test")
+            Job
+              .Step
+              .Run("sbt 'scalafixAll --check' scalafmtCheck +test +publish")
+              .withEnv("GITHUB_TOKEN" -> ctx("secrets.WRITE_PACKAGES_TOKEN"))
           )
         )
       )
