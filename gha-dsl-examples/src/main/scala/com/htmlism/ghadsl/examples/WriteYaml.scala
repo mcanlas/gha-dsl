@@ -28,14 +28,6 @@ object WriteYaml extends App {
       NonEmptyList.of(Push()),
       NonEmptyList.of(
         Job(
-          "foo",
-          GitHub.Runners.UbuntuLatest,
-          NonEmptyList.of(
-            Job.Step.Uses("actions/checkout@v3"),
-            Job.Step.Run("echo hello")
-          )
-        ),
-        Job(
           "bar",
           GitHub.Runners.UbuntuLatest,
           NonEmptyList.of(
