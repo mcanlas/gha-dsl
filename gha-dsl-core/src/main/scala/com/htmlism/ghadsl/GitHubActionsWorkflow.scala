@@ -1,8 +1,5 @@
 package com.htmlism.ghadsl
 
-import java.nio.file._
-
-import scala.jdk.CollectionConverters._
 import scala.util.chaining._
 
 import cats.data.NonEmptyList
@@ -11,65 +8,6 @@ import cats.syntax.all._
 import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent._
 import com.htmlism.ghadsl.GitHubActionsWorkflow._
 import com.htmlism.ghadsl.LineEncoder._
-
-object WriteYaml extends App {
-  val minimalWorkflow =
-    GitHubActionsWorkflow(
-      None,
-      NonEmptyList.of(Push()),
-      NonEmptyList.of(
-        Job(
-          "mimimal-foo",
-          GitHub.Runners.UbuntuLatest,
-          NonEmptyList.of(
-            Job.Step.Run("echo hello")
-          )
-        )
-      )
-    )
-
-  val workflow =
-    GitHubActionsWorkflow(
-      None,
-      NonEmptyList.of(PullRequest(), Push()),
-      NonEmptyList.of(
-        Job(
-          "foo",
-          GitHub.Runners.UbuntuLatest,
-          NonEmptyList.of(
-            Job.Step.Uses("actions/checkout@v2"),
-            Job.Step.Run("echo hello")
-          )
-        ),
-        Job(
-          "bar",
-          GitHub.Runners.UbuntuLatest,
-          NonEmptyList.of(
-            Job.Step.Uses("actions/checkout@v2"),
-            Job
-              .Step
-              .Uses("actions/setup-java@v3")
-              .parameters(
-                "distribution" -> "temurin",
-                "java-version" -> "17",
-                "cache" -> "sbt"
-              ),
-            Job.Step.Run("sbt 'scalafixAll --check' scalafmtCheck +test")
-          )
-        )
-      )
-    )
-      .withName("big workflow")
-
-  val heading =
-    List("# This file was automatically generated", "")
-
-  Files
-    .write(Path.of(".github", "workflows", "ci.yml"), (heading ::: workflow.encode).asJava)
-
-  Files
-    .write(Path.of(".github", "workflows", "minimal.yml"), (heading ::: minimalWorkflow.encode).asJava)
-}
 
 /**
   * A GHA job will not run without triggers specified
