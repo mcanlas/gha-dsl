@@ -22,7 +22,7 @@ object WriteYaml extends App {
           "mimimal-foo",
           GitHub.Runners.UbuntuLatest,
           NonEmptyList.of(
-            Job.Step.Runs("echo hello")
+            Job.Step.Run("echo hello")
           )
         )
       )
@@ -38,7 +38,7 @@ object WriteYaml extends App {
           GitHub.Runners.UbuntuLatest,
           NonEmptyList.of(
             Job.Step.Uses("actions/checkout@v2"),
-            Job.Step.Runs("echo hello")
+            Job.Step.Run("echo hello")
           )
         ),
         Job(
@@ -46,7 +46,14 @@ object WriteYaml extends App {
           GitHub.Runners.UbuntuLatest,
           NonEmptyList.of(
             Job.Step.Uses("actions/checkout@v2"),
-            Job.Step.Uses("actions/setup-java@v3")
+            Job
+              .Step
+              .Uses("actions/setup-java@v3")
+              .parameters(
+                "distribution" -> "temurin",
+                "java-version" -> "17"
+              ),
+            Job.Step.Run("sbt 'scalafixAll --check' scalafmtCheck +test")
           )
         )
       )
@@ -89,13 +96,13 @@ object GitHubActionsWorkflow {
         wf.name.map("name: " + _).toList
 
       val triggers =
-        List("on:") ++ wf.triggerEvents.toList.flatMap(_.encode).pipe(indents)
+        List("on:") ++ wf.triggerEvents.toList.flatMap(_.encode).pipe(intended)
 
       val jobs =
         List("jobs:") ++ wf
           .jobs
           .toList
-          .map(_.encode.pipe(indents))
+          .map(_.encode.pipe(intended))
           .pipe(interConcat(List("")))
 
       (
@@ -112,10 +119,10 @@ object GitHubActionsWorkflow {
   object TriggerEvent {
     implicit val triggerEventEncoder: LineEncoder[TriggerEvent] = {
       case PullRequest() =>
-        List("pull_request:") ++ List("branches: ['**']").pipe(indents)
+        List("pull_request:") ++ List("branches: ['**']").pipe(intended)
 
       case Push() =>
-        List("push:") ++ List("branches: ['**']").pipe(indents)
+        List("push:") ++ List("branches: ['**']").pipe(intended)
     }
 
     case class PullRequest() extends TriggerEvent
@@ -131,7 +138,7 @@ object GitHubActionsWorkflow {
         val jobLinesss =
           List("runs-on: " + j.runsOn.s, "steps:") ++ j.steps.toList.flatMap(_.encode.pipe(asArrayElement))
 
-        List(j.id + ":") ++ jobLinesss.pipe(indents)
+        List(j.id + ":") ++ jobLinesss.pipe(intended)
       }
 
     final case class Runner(s: String) extends AnyVal
@@ -140,16 +147,35 @@ object GitHubActionsWorkflow {
 
     object Step {
       implicit val stepEncoder: LineEncoder[Step] = {
-        case Uses(s) =>
-          List("uses: " + s)
+        case Uses(s, xs) =>
+          val withLines =
+            if (xs.isEmpty)
+              Nil
+            else
+              List("with:") ++ xs
+                .map { case (k, v) =>
+                  s"$k: $v"
+                }
+                .toList
+                .pipe(intended)
 
-        case Runs(s) =>
+          List("uses: " + s) ::: withLines
+
+        case Run(s) =>
           List("run: " + s)
       }
 
-      case class Uses(s: String) extends Step
+      case class Uses(s: String, args: Map[String, String]) extends Step {
+        def parameters(xs: (String, String)*): Uses =
+          copy(args = xs.toMap)
+      }
 
-      case class Runs(s: String) extends Step
+      object Uses {
+        def apply(s: String): Uses =
+          Uses(s, Map())
+      }
+
+      case class Run(s: String) extends Step
     }
   }
 }
@@ -159,7 +185,7 @@ trait LineEncoder[A] {
 }
 
 object LineEncoder {
-  def indents(xs: List[String]): List[String] =
+  def intended(xs: List[String]): List[String] =
     xs.map("  " + _)
 
   def asArrayElement(xs: List[String]): List[String] =
