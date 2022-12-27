@@ -13,10 +13,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-        run: echo hello
+      - run: echo hello
 
   bar:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: echo hello
+      - uses: actions/setup-java@v3

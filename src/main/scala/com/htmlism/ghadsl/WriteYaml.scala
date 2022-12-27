@@ -46,7 +46,7 @@ object WriteYaml extends App {
           GitHub.Runners.UbuntuLatest,
           NonEmptyList.of(
             Job.Step.Uses("actions/checkout@v2"),
-            Job.Step.Runs("echo hello")
+            Job.Step.Uses("actions/setup-java@v3")
           )
         )
       )
