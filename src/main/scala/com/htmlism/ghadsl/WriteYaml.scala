@@ -51,7 +51,8 @@ object WriteYaml extends App {
               .Uses("actions/setup-java@v3")
               .parameters(
                 "distribution" -> "temurin",
-                "java-version" -> "17"
+                "java-version" -> "17",
+                "cache" -> "sbt"
               ),
             Job.Step.Run("sbt 'scalafixAll --check' scalafmtCheck +test")
           )

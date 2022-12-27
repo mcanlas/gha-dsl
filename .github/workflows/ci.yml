@@ -23,4 +23,5 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+          cache: sbt
       - run: sbt 'scalafixAll --check' scalafmtCheck +test
