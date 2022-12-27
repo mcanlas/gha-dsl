@@ -58,11 +58,16 @@ object GitHubActionsWorkflow {
 
       case Push() =>
         List("push:") ++ List("branches: ['**']").pipe(intended)
+
+      case WorkflowDispatch() =>
+        List("workflow_dispatch:")
     }
 
     case class PullRequest() extends TriggerEvent
 
     case class Push() extends TriggerEvent
+
+    case class WorkflowDispatch() extends TriggerEvent
   }
 
   case class Job(id: String, runsOn: Job.Runner, steps: NonEmptyList[Job.Step])
