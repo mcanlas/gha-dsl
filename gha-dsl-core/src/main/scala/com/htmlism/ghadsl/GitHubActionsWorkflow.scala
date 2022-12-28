@@ -57,17 +57,41 @@ object GitHubActionsWorkflow {
         List("pull_request:") ++ List("branches: ['**']").pipe(intended)
 
       case Push() =>
-        List("push:") ++ List("branches: ['**']").pipe(intended)
+        List("push:") ++ List("branches: ['**']")
+          .pipe(intended)
 
-      case WorkflowDispatch() =>
-        List("workflow_dispatch:")
+      case WorkflowDispatch(inputs) =>
+        val inputLines =
+          if (inputs.isEmpty)
+            Nil
+          else
+            "inputs:" :: inputs
+              .map(in =>
+                List(in.key + ":")
+                  .pipe(intended)
+              )
+              .pipe(interConcat(List("")))
+
+        List("workflow_dispatch:") ++ inputLines
     }
 
     case class PullRequest() extends TriggerEvent
 
     case class Push() extends TriggerEvent
 
-    case class WorkflowDispatch() extends TriggerEvent
+    /**
+      * https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_dispatch
+      */
+    case class WorkflowDispatch(inputs: List[WorkflowDispatch.Input]) extends TriggerEvent
+
+    object WorkflowDispatch {
+      case class Input(key: String, isRequired: Boolean)
+
+      object Input {
+        implicit val inputEncoder: LineEncoder[Input] =
+          (in: Input) => List("required: " + in.isRequired.toString)
+      }
+    }
   }
 
   case class Job(id: String, runsOn: Job.Runner, steps: NonEmptyList[Job.Step])

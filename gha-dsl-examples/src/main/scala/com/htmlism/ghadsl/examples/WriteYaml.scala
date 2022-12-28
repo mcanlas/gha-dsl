@@ -5,6 +5,7 @@ import java.nio.file._
 
 import cats.data.NonEmptyList
 
+import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent.WorkflowDispatch.Input
 import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent._
 import com.htmlism.ghadsl.GitHubActionsWorkflow._
 
@@ -12,6 +13,33 @@ object WriteYaml extends App {
   val minimalWorkflow =
     GitHubActionsWorkflow(
       NonEmptyList.of(Push()),
+      NonEmptyList.of(
+        Job(
+          "mimimal-foo",
+          GitHub.Runners.UbuntuLatest,
+          NonEmptyList.of(
+            Job.Step.Run("echo hello")
+          )
+        )
+      )
+    )
+
+  val manuallyTriggered =
+    GitHubActionsWorkflow(
+      NonEmptyList.of(
+        WorkflowDispatch(
+          List(
+            Input(
+              "sha",
+              false
+            ),
+            Input(
+              "env",
+              false
+            )
+          )
+        )
+      ),
       NonEmptyList.of(
         Job(
           "mimimal-foo",
@@ -58,4 +86,7 @@ object WriteYaml extends App {
 
   Files
     .write(Path.of(".github", "workflows", "minimal.yml"), list(heading ::: minimalWorkflow.encode))
+
+  Files
+    .write(Path.of(".github", "workflows", "manually-triggered.yml"), list(heading ::: manuallyTriggered.encode))
 }
