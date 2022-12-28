@@ -30,12 +30,10 @@ object WriteYaml extends App {
         WorkflowDispatch(
           List(
             Input(
-              "sha",
-              false
+              "sha"
             ),
             Input(
-              "env",
-              false
+              "env"
             )
           )
         )

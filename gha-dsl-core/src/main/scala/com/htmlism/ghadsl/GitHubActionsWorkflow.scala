@@ -67,7 +67,7 @@ object GitHubActionsWorkflow {
           else
             "inputs:" :: inputs
               .map(in =>
-                List(in.key + ":")
+                (List(in.key + ":") ::: in.encode.pipe(intended))
                   .pipe(intended)
               )
               .pipe(interConcat(List("")))
@@ -86,11 +86,40 @@ object GitHubActionsWorkflow {
     case class WorkflowDispatch(inputs: List[WorkflowDispatch.Input]) extends TriggerEvent
 
     object WorkflowDispatch {
-      case class Input(key: String, isRequired: Boolean)
+
+      /**
+        * https://docs.github.com/en/actions/learn-github-actions/contexts#inputs-context
+        *
+        * @param key
+        * @param isRequired
+        *   Will tell the UI if this input field is required before triggering. GitHub default is `false`
+        * @param inputType
+        *   Gives the input a type. GitHub default is `string`
+        */
+      case class Input(key: String, isRequired: Option[Boolean], inputType: Option[Input.InputType])
 
       object Input {
         implicit val inputEncoder: LineEncoder[Input] =
-          (in: Input) => List("required: " + in.isRequired.toString)
+          (in: Input) =>
+            in.isRequired.map(t => "required:" + t.toString).toList :::
+              in.inputType.map(t => "type:" + InputType.toStr(t)).toList
+
+        def apply(key: String): Input =
+          Input(key, None, None)
+
+        sealed trait InputType
+
+        object InputType {
+          val toStr: InputType => String = {
+            case StringInput => "string"
+            case BooleanInput => "boolean"
+            case NumberInput => "number"
+          }
+
+          case object StringInput extends InputType
+          case object BooleanInput extends InputType
+          case object NumberInput extends InputType
+        }
       }
     }
   }
