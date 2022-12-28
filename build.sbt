@@ -6,6 +6,7 @@ lazy val root =
 lazy val core =
   module("core")
     .withCats
+    .withYaml
     .withTesting
 
 lazy val examples =
