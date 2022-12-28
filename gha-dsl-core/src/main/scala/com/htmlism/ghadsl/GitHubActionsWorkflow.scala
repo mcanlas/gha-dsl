@@ -73,6 +73,7 @@ object GitHubActionsWorkflow {
               .pipe(interConcat(List("")))
 
         List("workflow_dispatch:") ++ inputLines
+          .pipe(intended)
     }
 
     case class PullRequest() extends TriggerEvent
