@@ -91,21 +91,41 @@ object GitHubActionsWorkflow {
         * https://docs.github.com/en/actions/learn-github-actions/contexts#inputs-context
         *
         * @param key
+        * @param description
+        *   A textual description to appear above the input in the trigger UI
         * @param isRequired
         *   Will tell the UI if this input field is required before triggering. GitHub default is `false`
         * @param inputType
         *   Gives the input a type. GitHub default is `string`
         */
-      case class Input(key: String, isRequired: Option[Boolean], inputType: Option[Input.InputType])
+      case class Input(
+          key: String,
+          oDescription: Option[String],
+          isRequired: Option[Boolean],
+          inputType: Option[Input.InputType]
+      ) {
+        def description(s: String): Input =
+          copy(oDescription = s.some)
+
+        def required: Input =
+          copy(isRequired = true.some)
+
+        def asBoolean: Input =
+          copy(inputType = Input.InputType.BooleanInput.some)
+
+        def asNumber: Input =
+          copy(inputType = Input.InputType.NumberInput.some)
+      }
 
       object Input {
         implicit val inputEncoder: LineEncoder[Input] =
           (in: Input) =>
-            in.isRequired.map(t => "required:" + t.toString).toList :::
-              in.inputType.map(t => "type:" + InputType.toStr(t)).toList
+            in.oDescription.map(t => "description: " + t).toList :::
+              in.isRequired.map(t => "required: " + t.toString).toList :::
+              in.inputType.map(t => "type: " + InputType.toStr(t)).toList
 
         def apply(key: String): Input =
-          Input(key, None, None)
+          Input(key, None, None, None)
 
         sealed trait InputType
 
