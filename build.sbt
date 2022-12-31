@@ -5,6 +5,7 @@ lazy val root =
 
 lazy val core =
   module("core")
+    .settings(description := "A Scala DSL for generating GitHub Actions workflows")
     .withCats
     .withYaml
     .withTesting
