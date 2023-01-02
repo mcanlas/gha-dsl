@@ -1,11 +1,9 @@
-# This file was automatically generated
-
 on:
   push:
     branches: ['**']
 
 jobs:
-  bar:
+  Lint, test, and publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
