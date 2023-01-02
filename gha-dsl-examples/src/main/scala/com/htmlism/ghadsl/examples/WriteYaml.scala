@@ -74,7 +74,6 @@ object WriteYaml extends App {
         )
       )
     )
-      .withName("big workflow")
 
   val heading =
     List("# This file was automatically generated", "")
