@@ -204,7 +204,7 @@ object GitHubActionsWorkflow {
 
       case class Run(s: String, env: List[(String, String)]) extends Step {
         def withEnv(xs: (String, String)*): Run =
-          copy(env = xs.toList)
+          copy(env = env ++ xs.toList)
       }
 
       object Run {
