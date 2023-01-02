@@ -64,7 +64,7 @@ object WriteYaml extends App {
               .parameters(
                 "distribution" -> "temurin",
                 "java-version" -> "17",
-                "cache" -> "sbt"
+                "cache"        -> "sbt"
               ),
             Job
               .Step

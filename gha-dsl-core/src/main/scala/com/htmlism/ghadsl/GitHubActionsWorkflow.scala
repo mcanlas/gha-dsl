@@ -131,14 +131,14 @@ object GitHubActionsWorkflow {
 
         object InputType {
           val toStr: InputType => String = {
-            case StringInput => "string"
+            case StringInput  => "string"
             case BooleanInput => "boolean"
-            case NumberInput => "number"
+            case NumberInput  => "number"
           }
 
-          case object StringInput extends InputType
+          case object StringInput  extends InputType
           case object BooleanInput extends InputType
-          case object NumberInput extends InputType
+          case object NumberInput  extends InputType
         }
       }
     }
