@@ -43,7 +43,8 @@ object WriteYaml extends App {
           "mimimal-foo",
           GitHub.Runners.UbuntuLatest,
           NonEmptyList.of(
-            Job.Step.Run("echo hello")
+            Job.Step.Run("echo hello"),
+            Job.Step.Run(List("ls -la", "ls -la"))
           )
         )
       )

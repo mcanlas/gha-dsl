@@ -178,7 +178,7 @@ object GitHubActionsWorkflow {
 
           List("uses: " + s) ::: withLines
 
-        case Run(s, env) =>
+        case Run(s, multi, env) =>
           val envLines =
             if (env.isEmpty)
               Nil
@@ -189,7 +189,7 @@ object GitHubActionsWorkflow {
                 }
                 .pipe(intended)
 
-          List("run: " + s) ::: envLines
+          List("run: " + s) ::: LineEncoder.intended(multi) ::: envLines
       }
 
       case class Uses(s: String, args: List[(String, String)]) extends Step {
@@ -202,14 +202,17 @@ object GitHubActionsWorkflow {
           Uses(s, Nil)
       }
 
-      case class Run(s: String, env: List[(String, String)]) extends Step {
+      case class Run(s: String, multi: List[String], env: List[(String, String)]) extends Step {
         def withEnv(xs: (String, String)*): Run =
           copy(env = env ++ xs.toList)
       }
 
       object Run {
         def apply(s: String): Run =
-          Run(s, Nil)
+          Run(s, Nil, Nil)
+
+        def apply(xs: List[String]): Run =
+          Run("|", xs, Nil)
       }
     }
   }
