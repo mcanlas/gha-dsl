@@ -80,7 +80,7 @@ object WriteYaml extends App {
     List("# This file was automatically generated", "")
 
   Files
-    .write(Path.of(".github", "workflows", "ci.yml"), list(heading ::: workflow.encode))
+    .write(Path.of(".github", "workflows", "ci-ish.yml"), list(heading ::: workflow.encode))
 
   Files
     .write(Path.of(".github", "workflows", "minimal.yml"), list(heading ::: minimalWorkflow.encode))
