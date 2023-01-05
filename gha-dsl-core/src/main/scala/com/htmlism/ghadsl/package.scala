@@ -1,7 +1,10 @@
 package com.htmlism
 
+import io.circe._
+import io.circe.syntax._
+
 package object ghadsl {
-  implicit class EncoderOps[A](x: A)(implicit enc: LineEncoder[A]) {
+  implicit class LineEncoderOps[A](x: A)(implicit enc: LineEncoder[A]) {
     def encode: List[String] =
       enc.encode(x)
   }
@@ -16,4 +19,7 @@ package object ghadsl {
 
   def ctx(s: String): String =
     s"$${{ $s }}"
+
+  implicit def toJson[A: Encoder](x: A): Json =
+    x.asJson
 }

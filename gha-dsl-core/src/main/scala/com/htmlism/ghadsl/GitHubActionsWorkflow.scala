@@ -2,6 +2,8 @@ package com.htmlism.ghadsl
 
 import cats.data.NonEmptyList
 import cats.syntax.all._
+import io.circe.Json
+import io.circe.yaml.Printer
 
 import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent._
 import com.htmlism.ghadsl.GitHubActionsWorkflow._
@@ -172,7 +174,7 @@ object GitHubActionsWorkflow {
             else
               List("with:") ++ xs
                 .map { case (k, v) =>
-                  s"$k: $v"
+                  s"$k: " + Printer.spaces2.pretty(v).trim
                 }
                 .pipe(intended)
 
@@ -192,8 +194,8 @@ object GitHubActionsWorkflow {
           List("run: " + s) ::: LineEncoder.intended(multi) ::: envLines
       }
 
-      case class Uses(s: String, args: List[(String, String)]) extends Step {
-        def parameters(xs: (String, String)*): Uses =
+      case class Uses(s: String, args: List[(String, Json)]) extends Step {
+        def parameters(xs: (String, Json)*): Uses =
           copy(args = xs.toList)
       }
 

@@ -11,5 +11,6 @@ See also [GitHub Actions explained quickly](explained-quickly.md)
 
 ## Non-goals
 
-- Fully type-safe YAML integration (i.e. the generated YAML should be valid for most cases but does not internally use a YAML model) 
+- Fully type-safe YAML integration
+  - The generated YAML should be valid for most cases but does not internally use a YAML model 
 - Being an "overly opinionated framework"
