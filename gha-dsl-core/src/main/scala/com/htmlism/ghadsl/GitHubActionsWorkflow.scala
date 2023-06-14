@@ -151,14 +151,14 @@ object GitHubActionsWorkflow {
   object Job {
     implicit val jobEncoder: LineEncoder[Job] =
       (j: Job) => {
-        val jobLinesss =
+        val jobLines =
           List("runs-on: " + j.runsOn.s, "steps:") ++
             j.steps
               .toList
               .map(_.encode.pipe(asArrayElement))
               .pipe(interConcat(List("")))
 
-        List(j.id + ":") ++ jobLinesss.pipe(indented)
+        List(j.id + ":") ++ jobLines.pipe(indented)
       }
 
     final case class Runner(s: String) extends AnyVal
