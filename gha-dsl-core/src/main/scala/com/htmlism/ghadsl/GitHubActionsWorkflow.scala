@@ -12,7 +12,7 @@ import com.htmlism.ghadsl.LineEncoder._
 /**
   * A GHA job will not run without triggers specified
   *
-  * @param name
+  * @param workflowName
   *   Workflow name is optional; if it isn't provided, the file path will be used
   * @param triggerEvents
   *   At least one trigger is required
@@ -20,19 +20,19 @@ import com.htmlism.ghadsl.LineEncoder._
   *   At least one job is required
   */
 case class GitHubActionsWorkflow(
-    name: Option[String],
+    workflowName: Option[String],
     triggerEvents: NonEmptyList[TriggerEvent],
     jobs: NonEmptyList[Job]
 ) {
-  def withName(s: String): GitHubActionsWorkflow =
-    copy(name = s.some)
+  def name(s: String): GitHubActionsWorkflow =
+    copy(workflowName = s.some)
 }
 
 object GitHubActionsWorkflow {
   implicit val ghaEncoder: LineEncoder[GitHubActionsWorkflow] =
     (wf: GitHubActionsWorkflow) => {
       val nameLines =
-        wf.name.map(n => List("name: " + n))
+        wf.workflowName.map(n => List("name: " + n))
 
       val triggers =
         List("on:") ++ wf.triggerEvents.toList.flatMap(_.encode).pipe(intended)
