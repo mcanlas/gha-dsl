@@ -47,6 +47,7 @@ object WriteYaml extends App {
             Job.Step.Run(List("ls -la", "ls -la"))
           )
         )
+          .name("Job with name")
       )
     )
 

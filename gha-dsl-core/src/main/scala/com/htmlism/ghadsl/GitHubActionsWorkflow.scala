@@ -146,13 +146,17 @@ object GitHubActionsWorkflow {
     }
   }
 
-  case class Job(id: String, runsOn: Job.Runner, steps: NonEmptyList[Job.Step])
+  case class Job(id: String, runsOn: Job.Runner, steps: NonEmptyList[Job.Step], jobName: Option[String]) {
+    def name(s: String): Job =
+      copy(jobName = s.some)
+  }
 
   object Job {
     implicit val jobEncoder: LineEncoder[Job] =
       (j: Job) => {
         val jobLines =
-          List("runs-on: " + j.runsOn.s, "steps:") ++
+          j.jobName.map("name: " + _).toList ++
+            List("runs-on: " + j.runsOn.s, "steps:") ++
             j.steps
               .toList
               .map(_.encode.pipe(asArrayElement))
@@ -160,6 +164,9 @@ object GitHubActionsWorkflow {
 
         List(j.id + ":") ++ jobLines.pipe(indented)
       }
+
+    def apply(id: String, runsOn: Job.Runner, steps: NonEmptyList[Job.Step]): Job =
+      Job(id, runsOn, steps, None)
 
     final case class Runner(s: String) extends AnyVal
 
