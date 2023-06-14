@@ -35,13 +35,13 @@ object GitHubActionsWorkflow {
         wf.workflowName.map(n => List("name: " + n))
 
       val triggers =
-        List("on:") ++ wf.triggerEvents.toList.flatMap(_.encode).pipe(intended)
+        List("on:") ++ wf.triggerEvents.toList.flatMap(_.encode).pipe(indented)
 
       val jobs =
         List("jobs:") ++ wf
           .jobs
           .toList
-          .map(_.encode.pipe(intended))
+          .map(_.encode.pipe(indented))
           .pipe(interConcat(List("")))
 
       (nameLines.toList ::: List(triggers, jobs))
@@ -56,11 +56,11 @@ object GitHubActionsWorkflow {
   object TriggerEvent {
     implicit val triggerEventEncoder: LineEncoder[TriggerEvent] = {
       case PullRequest() =>
-        List("pull_request:") ++ List("branches: ['**']").pipe(intended)
+        List("pull_request:") ++ List("branches: ['**']").pipe(indented)
 
       case Push() =>
         List("push:") ++ List("branches: ['**']")
-          .pipe(intended)
+          .pipe(indented)
 
       case WorkflowDispatch(inputs) =>
         val inputLines =
@@ -69,13 +69,13 @@ object GitHubActionsWorkflow {
           else
             "inputs:" :: inputs
               .map(in =>
-                (List(in.key + ":") ::: in.encode.pipe(intended))
-                  .pipe(intended)
+                (List(in.key + ":") ::: in.encode.pipe(indented))
+                  .pipe(indented)
               )
               .pipe(interConcat(List("")))
 
         List("workflow_dispatch:") ++ inputLines
-          .pipe(intended)
+          .pipe(indented)
     }
 
     case class PullRequest() extends TriggerEvent
@@ -158,7 +158,7 @@ object GitHubActionsWorkflow {
               .map(_.encode.pipe(asArrayElement))
               .pipe(interConcat(List("")))
 
-        List(j.id + ":") ++ jobLinesss.pipe(intended)
+        List(j.id + ":") ++ jobLinesss.pipe(indented)
       }
 
     final case class Runner(s: String) extends AnyVal
@@ -176,7 +176,7 @@ object GitHubActionsWorkflow {
                 .map { case (k, v) =>
                   s"$k: " + Printer.spaces2.pretty(v).trim
                 }
-                .pipe(intended)
+                .pipe(indented)
 
           List("uses: " + s) ::: withLines
 
@@ -189,9 +189,9 @@ object GitHubActionsWorkflow {
                 .map { case (k, v) =>
                   s"$k: $v"
                 }
-                .pipe(intended)
+                .pipe(indented)
 
-          List("run: " + s) ::: LineEncoder.intended(multi) ::: envLines
+          List("run: " + s) ::: LineEncoder.indented(multi) ::: envLines
       }
 
       case class Uses(s: String, args: List[(String, Json)]) extends Step {
@@ -225,7 +225,7 @@ trait LineEncoder[A] {
 }
 
 object LineEncoder {
-  def intended(xs: List[String]): List[String] =
+  def indented(xs: List[String]): List[String] =
     xs.map { s =>
       if (s.isEmpty)
         s
