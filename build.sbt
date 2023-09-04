@@ -1,7 +1,7 @@
 lazy val root =
   Project("gha-dsl", file("."))
     .aggregate(core, examples)
-    .disablePublshing
+    .disablePublishing
 
 lazy val core =
   module("core")
@@ -13,4 +13,4 @@ lazy val core =
 lazy val examples =
   module("examples")
     .dependsOn(core)
-    .disablePublshing
+    .disablePublishing
