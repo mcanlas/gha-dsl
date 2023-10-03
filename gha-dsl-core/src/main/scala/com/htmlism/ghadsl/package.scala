@@ -1,7 +1,7 @@
 package com.htmlism
 
-import io.circe._
-import io.circe.syntax._
+import io.circe.*
+import io.circe.syntax.*
 
 package object ghadsl {
   implicit class LineEncoderOps[A](x: A)(implicit enc: LineEncoder[A]) {

@@ -1,13 +1,13 @@
 package com.htmlism.ghadsl
 package examples
 
-import java.nio.file._
+import java.nio.file.*
 
 import cats.data.NonEmptyList
 
 import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent.WorkflowDispatch.Input
-import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent._
-import com.htmlism.ghadsl.GitHubActionsWorkflow._
+import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent.*
+import com.htmlism.ghadsl.GitHubActionsWorkflow.*
 
 object WriteYaml extends App {
   val minimalWorkflow =

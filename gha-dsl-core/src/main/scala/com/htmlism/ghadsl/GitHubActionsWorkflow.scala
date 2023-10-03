@@ -1,13 +1,13 @@
 package com.htmlism.ghadsl
 
 import cats.data.NonEmptyList
-import cats.syntax.all._
+import cats.syntax.all.*
 import io.circe.Json
 import io.circe.yaml.Printer
 
-import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent._
-import com.htmlism.ghadsl.GitHubActionsWorkflow._
-import com.htmlism.ghadsl.LineEncoder._
+import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent.*
+import com.htmlism.ghadsl.GitHubActionsWorkflow.*
+import com.htmlism.ghadsl.LineEncoder.*
 
 /**
   * A GHA job will not run without triggers specified
