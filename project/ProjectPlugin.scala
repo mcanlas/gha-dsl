@@ -31,7 +31,7 @@ object ProjectPlugin extends AutoPlugin {
 
       def withYaml: Project =
         p
-          .settings(libraryDependencies += "io.circe" %% "circe-yaml" % "0.14.2")
+          .settings(libraryDependencies += "io.circe" %% "circe-yaml" % "0.15.1")
 
       def withTesting: Project = {
         val weaverVersion =
