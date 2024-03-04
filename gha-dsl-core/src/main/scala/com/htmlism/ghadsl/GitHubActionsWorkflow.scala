@@ -5,8 +5,8 @@ import cats.syntax.all.*
 import io.circe.Json
 import io.circe.yaml.Printer
 
-import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent.*
 import com.htmlism.ghadsl.GitHubActionsWorkflow.*
+import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent.*
 import com.htmlism.ghadsl.LineEncoder.*
 
 /**

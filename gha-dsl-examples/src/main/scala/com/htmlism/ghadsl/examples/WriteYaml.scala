@@ -5,9 +5,9 @@ import java.nio.file.*
 
 import cats.data.NonEmptyList
 
-import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent.WorkflowDispatch.Input
-import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent.*
 import com.htmlism.ghadsl.GitHubActionsWorkflow.*
+import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent.*
+import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent.WorkflowDispatch.Input
 
 object WriteYaml extends App {
   val minimalWorkflow =
