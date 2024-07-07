@@ -187,7 +187,12 @@ object GitHubActionsWorkflow {
 
           List(s"uses: $action") ::: withLines
 
-        case Run(cmd, multi, env) =>
+        case Run(cmd, multi, env, oName) =>
+          val nameLines =
+            oName
+              .toList
+              .map("name: " + _)
+
           val envLines =
             if (env.isEmpty)
               Nil
@@ -198,7 +203,10 @@ object GitHubActionsWorkflow {
                 }
                 .pipe(indented)
 
-          List(s"run: $cmd") ::: LineEncoder.indented(multi) ::: envLines
+          nameLines :::
+            List(s"run: $cmd") :::
+            LineEncoder.indented(multi) :::
+            envLines
       }
 
       case class Uses(action: String, args: List[(String, Json)] = Nil) extends Step {
@@ -206,14 +214,22 @@ object GitHubActionsWorkflow {
           copy(args = xs.toList)
       }
 
-      case class Run(command: String, multi: List[String] = Nil, env: List[(String, String)] = Nil) extends Step {
+      case class Run(
+          command: String,
+          multi: List[String]         = Nil,
+          env: List[(String, String)] = Nil,
+          name: Option[String]        = None
+      ) extends Step {
+        def withName(s: String): Run =
+          copy(name = s.some)
+
         def withEnv(xs: (String, String)*): Run =
           copy(env = env ++ xs.toList)
       }
 
       object Run {
         def apply(xs: List[String]): Run =
-          Run("|", xs, Nil)
+          Run("|", xs, Nil, None)
       }
     }
   }
