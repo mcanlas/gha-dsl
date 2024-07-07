@@ -201,25 +201,17 @@ object GitHubActionsWorkflow {
           List(s"run: $cmd") ::: LineEncoder.indented(multi) ::: envLines
       }
 
-      case class Uses(action: String, args: List[(String, Json)]) extends Step {
+      case class Uses(action: String, args: List[(String, Json)] = Nil) extends Step {
         def parameters(xs: (String, Json)*): Uses =
           copy(args = xs.toList)
       }
 
-      object Uses {
-        def apply(s: String): Uses =
-          Uses(s, Nil)
-      }
-
-      case class Run(command: String, multi: List[String], env: List[(String, String)]) extends Step {
+      case class Run(command: String, multi: List[String] = Nil, env: List[(String, String)] = Nil) extends Step {
         def withEnv(xs: (String, String)*): Run =
           copy(env = env ++ xs.toList)
       }
 
       object Run {
-        def apply(s: String): Run =
-          Run(s, Nil, Nil)
-
         def apply(xs: List[String]): Run =
           Run("|", xs, Nil)
       }
