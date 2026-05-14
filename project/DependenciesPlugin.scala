@@ -6,25 +6,19 @@ object DependenciesPlugin extends AutoPlugin {
 
   object autoImport {
     implicit class DependencyOps(p: Project) {
-      val circeYamlVersion =
-        "0.16.1"
-
       def withCats: Project =
         p
-          .settings(libraryDependencies += "org.typelevel" %% "cats-core" % "2.13.0")
+          .settings(libraryDependencies += "org.typelevel" %% "cats-core" % Versions.catsCore)
 
       def withYaml: Project =
         p
-          .settings(libraryDependencies += "io.circe" %% "circe-yaml" % circeYamlVersion)
+          .settings(libraryDependencies += "io.circe" %% "circe-yaml" % Versions.circeYaml)
 
       def withTesting: Project = {
-        val weaverVersion =
-          "0.8.4"
-
         p.settings(
           libraryDependencies ++= Seq(
-            "com.disneystreaming" %% "weaver-cats"       % weaverVersion % Test,
-            "com.disneystreaming" %% "weaver-scalacheck" % weaverVersion % Test
+            "com.disneystreaming" %% "weaver-cats"       % Versions.weaver % Test,
+            "com.disneystreaming" %% "weaver-scalacheck" % Versions.weaver % Test
           )
         )
       }
