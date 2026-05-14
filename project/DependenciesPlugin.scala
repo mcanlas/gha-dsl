@@ -14,14 +14,13 @@ object DependenciesPlugin extends AutoPlugin {
         p
           .settings(libraryDependencies += "io.circe" %% "circe-yaml" % Versions.circeYaml)
 
-      def withTesting: Project = {
+      def withTesting: Project =
         p.settings(
           libraryDependencies ++= Seq(
             "com.disneystreaming" %% "weaver-cats"       % Versions.weaver % Test,
             "com.disneystreaming" %% "weaver-scalacheck" % Versions.weaver % Test
           )
         )
-      }
     }
   }
 }
