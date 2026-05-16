@@ -17,8 +17,8 @@ object DependenciesPlugin extends AutoPlugin {
       def withTesting: Project =
         p.settings(
           libraryDependencies ++= Seq(
-            "com.disneystreaming" %% "weaver-cats"       % Versions.weaver % Test,
-            "com.disneystreaming" %% "weaver-scalacheck" % Versions.weaver % Test
+            "org.typelevel" %% "weaver-cats"       % Versions.weaver % Test,
+            "org.typelevel" %% "weaver-scalacheck" % Versions.weaver % Test
           )
         )
     }
