@@ -209,16 +209,21 @@ object GitHubActionsWorkflow {
             envLines
       }
 
-      case class Uses(action: String, args: List[(String, Json)] = Nil) extends Step {
+      case class Uses(action: String, args: List[(String, Json)]) extends Step {
         def parameters(xs: (String, Json)*): Uses =
           copy(args = xs.toList)
       }
 
+      object Uses {
+        def apply(action: String): Uses =
+          Uses(action, Nil)
+      }
+
       case class Run(
           command: String,
-          multi: List[String]         = Nil,
-          env: List[(String, String)] = Nil,
-          name: Option[String]        = None
+          multi: List[String],
+          env: List[(String, String)],
+          name: Option[String]
       ) extends Step {
         def withName(s: String): Run =
           copy(name = s.some)
@@ -228,6 +233,9 @@ object GitHubActionsWorkflow {
       }
 
       object Run {
+        def apply(command: String): Run =
+          Run(command, Nil, Nil, None)
+
         def apply(xs: List[String]): Run =
           Run("|", xs, Nil, None)
       }

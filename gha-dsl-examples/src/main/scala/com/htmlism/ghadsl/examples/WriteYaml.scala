@@ -9,86 +9,100 @@ import com.htmlism.ghadsl.GitHubActionsWorkflow.*
 import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent.*
 import com.htmlism.ghadsl.GitHubActionsWorkflow.TriggerEvent.WorkflowDispatch.Input
 
-object WriteYaml extends App {
-  val minimalWorkflow =
-    GitHubActionsWorkflow(
-      NonEmptyList.of(Push()),
-      NonEmptyList.of(
-        Job(
-          "mimimal-foo",
-          GitHub.Runners.UbuntuLatest,
-          NonEmptyList.of(
-            Job.Step.Run("echo hello")
-          )
-        )
-      )
-    )
-
-  val manuallyTriggered =
-    GitHubActionsWorkflow(
-      NonEmptyList.of(
-        WorkflowDispatch(
-          List(
-            Input(
-              "sha"
-            ),
-            Input(
-              "env"
+object WriteYaml {
+  def main(args: Array[String]): Unit = {
+    val minimalWorkflow =
+      GitHubActionsWorkflow(
+        NonEmptyList.of(Push()),
+        NonEmptyList.of(
+          Job(
+            "mimimal-foo",
+            GitHub.Runners.UbuntuLatest,
+            NonEmptyList.of(
+              Job.Step.Run("echo hello")
             )
           )
         )
-      ),
-      NonEmptyList.of(
-        Job(
-          "mimimal-foo",
-          GitHub.Runners.UbuntuLatest,
-          NonEmptyList.of(
-            Job
-              .Step
-              .Run("echo hello")
-              .withName("Echoing"),
-            Job.Step.Run(List("ls -la", "ls -la"))
-          )
-        )
-          .name("Job with name")
       )
-    )
 
-  val workflow =
-    GitHubActionsWorkflow(
-      NonEmptyList.of(Push()),
-      NonEmptyList.of(
-        Job(
-          "bar",
-          GitHub.Runners.UbuntuLatest,
-          NonEmptyList.of(
-            Job.Step.Uses("actions/checkout@v3"),
-            Job
-              .Step
-              .Uses("actions/setup-java@v3")
-              .parameters(
-                "distribution" -> "temurin",
-                "java-version" -> 17,
-                "cache"        -> "sbt"
+    val manuallyTriggered =
+      GitHubActionsWorkflow(
+        NonEmptyList.of(
+          WorkflowDispatch(
+            List(
+              Input(
+                "sha"
               ),
-            Job
-              .Step
-              .Run("sbt 'scalafixAll --check' scalafmtCheck +test +publish")
-              .withEnv("GITHUB_TOKEN" -> ctx("secrets.WRITE_PACKAGES_TOKEN"))
+              Input(
+                "env"
+              )
+            )
+          )
+        ),
+        NonEmptyList.of(
+          Job(
+            "mimimal-foo",
+            GitHub.Runners.UbuntuLatest,
+            NonEmptyList.of(
+              Job
+                .Step
+                .Run("echo hello")
+                .withName("Echoing"),
+              Job.Step.Run(List("ls -la", "ls -la"))
+            )
+          )
+            .name("Job with name")
+        )
+      )
+
+    val workflow =
+      GitHubActionsWorkflow(
+        NonEmptyList.of(Push()),
+        NonEmptyList.of(
+          Job(
+            "bar",
+            GitHub.Runners.UbuntuLatest,
+            NonEmptyList.of[Job.Step](
+              Job.Step.Uses("actions/checkout@v3"),
+              Job
+                .Step
+                .Uses("actions/setup-java@v3")
+                .parameters(
+                  "distribution" -> "temurin",
+                  "java-version" -> 17,
+                  "cache"        -> "sbt"
+                ),
+              Job
+                .Step
+                .Run("sbt 'scalafixAll --check' scalafmtCheck +test +publish")
+                .withEnv("GITHUB_TOKEN" -> ctx("secrets.WRITE_PACKAGES_TOKEN"))
+            )
           )
         )
       )
-    )
 
-  val heading =
-    List("# This file was automatically generated", "")
+    val heading =
+      List("# This file was automatically generated", "")
 
-  Files
-    .write(Path.of(".github", "workflows", "ci-ish.yml"), list(heading ::: workflow.encode))
+    locally {
+      val _ = Files
+        .write(Path.of(".github", "workflows", "ci-ish.yml"), list(heading ::: workflow.encode))
 
-  Files
-    .write(Path.of(".github", "workflows", "minimal.yml"), list(heading ::: minimalWorkflow.encode))
+      ()
+    }
 
-  Files
-    .write(Path.of(".github", "workflows", "manually-triggered.yml"), list(heading ::: manuallyTriggered.encode))
+    locally {
+      val _ = Files
+        .write(Path.of(".github", "workflows", "minimal.yml"), list(heading ::: minimalWorkflow.encode))
+
+      ()
+    }
+
+    locally {
+      val _ = Files
+        .write(Path.of(".github", "workflows", "manually-triggered.yml"), list(heading ::: manuallyTriggered.encode))
+
+      ()
+    }
+  }
 }
